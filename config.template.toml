@@ -1,0 +1,57 @@
+# Public starter config for zotero_sync.
+# On first run, the script copies this file to config.toml automatically.
+
+[zotero]
+# Default Zotero data directory. If your Zotero library lives somewhere else,
+# edit these two paths before syncing.
+db_path = "~/Zotero/zotero.sqlite"
+storage_dir = "~/Zotero/storage"
+
+# Exact Zotero collection name to sync.
+collection_name = "reMarkable Sync"
+
+# "collection" means only the named collection above and its subcollections.
+# "library" means the entire Zotero library.
+library_scope = "collection"
+
+# Optional base directory for linked attachments that use relative paths.
+linked_attachment_base_dir = ""
+
+[remarkable]
+# The default USB address used by reMarkable tablets in developer mode.
+host = "10.11.99.1"
+user = "root"
+
+# Leave this blank. The public script will ask for the SSH password on first run
+# and store it locally in user_data/secrets.json.
+password = ""
+
+xochitl_dir = "/home/root/.local/share/remarkable/xochitl"
+metadata_cache_dir = ".cache/remarkable_metadata"
+
+# The base folder on the reMarkable.
+folder_uuid = ""
+folder_path = "/Zotero"
+
+# Best-effort field for reMarkable document tags.
+tag_metadata_field = "tags"
+restart_xochitl_after_sync = true
+web_download_timeout_seconds = 120
+ssh_connect_timeout_seconds = 10
+xochitl_ready_timeout_seconds = 45
+xochitl_settle_seconds = 8
+
+[sync]
+state_path = ".cache/sync_state.json"
+upload_changed_as_new_copy = true
+persist_author_tags_to_zotero = true
+
+[annotated_import]
+inbox_dir = "annotated_exports/inbox"
+downloaded_dir = "annotated_exports/from_device"
+repaired_dir = "annotated_exports/repaired"
+state_path = ".cache/annotated_import_state.json"
+replace_source_attachment = true
+attachment_title = "reMarkable Annotated PDF"
+require_zotero_closed = true
+db_backup_dir = ".cache/zotero_db_backups"

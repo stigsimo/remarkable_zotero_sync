@@ -1,0 +1,6 @@
+config.toml
+user_data/
+.cache/
+annotated_exports/
+__pycache__/
+.DS_Store

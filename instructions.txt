@@ -1,0 +1,302 @@
+zotero_sync setup and use guide
+
+Important notes before you begin
+
+- This tool is designed for and tested with Mac
+- It has been tested with the reMarkable Paper Pro
+- It has been tested and is working with reMarkable Paper Pro software version
+  3.26.0.68
+- It is not yet confirmed to work with other reMarkable tablet models
+- It will likely not work as-is on Windows
+- It may also work on Linux if the required command-line tools are available,
+  but Linux use has not been tested
+- Because this tool writes directly to reMarkable's internal document storage,
+  future reMarkable software updates could break part or all of the sync
+  process
+
+Do not keep Zotero open while the tool is running.
+
+The tool writes directly to your local Zotero database when it imports updated
+annotated PDFs back from the reMarkable. If Zotero is open at the same time,
+that can cause problems.
+
+What this tool does
+
+This tool syncs selected PDFs between Zotero and a reMarkable tablet.
+It is meant for this workflow:
+
+- Zotero is where you store and organize your papers
+- reMarkable is where you read and annotate them
+- after syncing, the latest version of the paper should be available in Zotero
+
+Before you start
+
+You will need:
+
+- a Mac
+- a local Zotero library on that Mac
+- a reMarkable connected by USB
+- the reMarkable SSH password from the tablet's Developer mode screen
+- an internet connection for the setup steps
+
+Step 1. Open Terminal
+
+Terminal is the Mac app that lets you type commands.
+
+To open it:
+- press Command-Space
+- type `Terminal`
+- press Return
+
+Step 2. Install Python
+
+Python is the programming language this tool uses.
+
+The easiest option for most people is:
+- go to https://www.python.org/downloads/
+- download the current macOS installer
+- run the installer
+
+After that, go back to Terminal and check that Python is installed:
+
+`python3 --version`
+
+If Terminal prints a Python version number, you are ready for the next step.
+
+Step 3. Install Homebrew if you do not already have it
+
+Homebrew is a free package manager for Mac. In simple terms, it is a tool that
+makes it easier to install other tools from Terminal.
+
+First, check whether Homebrew is already installed:
+
+`brew --version`
+
+If Terminal prints a version number, Homebrew is already installed.
+If Terminal says the command was not found, install Homebrew.
+
+To install Homebrew, copy and paste this official installation command into
+Terminal, then press Return:
+
+`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+
+During installation:
+- Homebrew may ask for your Mac password
+- macOS may ask to install Apple's Command Line Tools
+- if that happens, allow it and let it finish
+
+When Homebrew finishes, it may print one or more extra commands for your shell
+setup. Follow those instructions exactly if they appear.
+
+After Homebrew is installed, check again:
+
+`brew --version`
+
+Step 4. Install the extra command-line tools this project needs
+
+This sync tool uses a few helper tools to communicate with the reMarkable:
+
+- `ssh`
+- `scp`
+- `rsync`
+- `sshpass`
+
+Many Macs already have `ssh` and `scp`, but you should still install the full
+set below because `rsync` and `sshpass` are important for this tool.
+
+In Terminal, run:
+
+`brew install rsync sshpass`
+
+Step 5. Install the Python package this project needs
+
+In Terminal, change into this `zotero_sync` folder.
+
+One easy way to do that:
+- type `cd ` in Terminal, including the space after `cd`
+- drag the `zotero_sync` folder into the Terminal window
+- press Return
+
+Then install the Python package this tool needs:
+
+`python3 -m pip install pymupdf`
+
+Step 6. Set up Zotero
+
+In Zotero:
+
+- create a collection named exactly `reMarkable Sync`
+- put the papers you want to sync into that collection
+- if you want folders on the reMarkable, create subcollections inside
+  `reMarkable Sync`
+
+Those subcollections will become matching folders inside `/Zotero` on the
+reMarkable.
+
+If your Zotero library is stored in the standard place on your Mac, the tool
+will usually work with the default settings.
+
+If your Zotero data folder is somewhere else, you will need to edit `config.toml`
+after the first run and set:
+- `db_path` to your `zotero.sqlite` file
+- `storage_dir` to your Zotero `storage` folder
+
+Choose which part of Zotero the tool uses
+
+This setting decides which part of your Zotero library the tool looks at when
+it chooses PDFs to send to the reMarkable.
+
+By default, the tool looks only at the collection named `reMarkable Sync` and
+its subcollections.
+
+For many people, this is the simplest and safest choice, because it lets you
+pick only the papers you want on the reMarkable instead of sending your whole
+library there.
+
+In this default mode:
+
+- the collection `reMarkable Sync` becomes the `/Zotero` folder on the
+  reMarkable
+- subcollections inside `reMarkable Sync` become subfolders inside `/Zotero`
+- papers outside that collection tree are ignored
+
+Example:
+
+- `reMarkable Sync`
+  becomes
+  `/Zotero`
+- `reMarkable Sync / Review / Methods`
+  becomes
+  `/Zotero/Review/Methods`
+
+If you want the tool to look at your entire Zotero library instead, run:
+
+`python3 main.py --choose-library-scope`
+
+The tool will show a short list of choices and ask you to type `yes` before
+saving your choice.
+
+If you choose whole-library mode:
+
+- the tool looks through your whole Zotero library, not just `reMarkable Sync`
+- everything still goes inside the main `/Zotero` folder on the reMarkable
+- top-level Zotero collections become folders inside `/Zotero`
+- subcollections become subfolders inside those folders
+- items that are not in any collection go into the main `/Zotero` folder
+
+Example:
+
+- a top-level Zotero collection called `Field Notes`
+  becomes
+  `/Zotero/Field Notes`
+- a subcollection called `Mosquitoes`
+  inside `Field Notes`
+  becomes
+  `/Zotero/Field Notes/Mosquitoes`
+
+Whole-library mode is useful for people who want the reMarkable to reflect the
+structure of their full Zotero library instead of a single selected collection.
+
+You can switch back and forth later. Running the same command again lets you
+choose which part of Zotero the tool should use.
+
+However, once you settle on the mode you want, it is usually best to keep using
+that same mode. Switching back and forth later is possible, but it is not
+recommended unless you really need to do it, because it can confuse the
+existing sync state and lead to duplicate, moved, or otherwise messy results on
+the reMarkable.
+
+Step 7. Prepare the reMarkable
+
+On the tablet:
+
+- turn on Developer mode
+- open the screen that shows the SSH password
+
+The exact menu names can vary a little between software versions, so if you do
+not immediately see Developer mode, look through the Settings screens on the
+tablet.
+
+To find the SSH password on recent reMarkable software:
+
+- open `Settings`
+- go to `General`
+- open `Help`
+- open `About`
+- tap `Copyrights and licenses`
+- scroll to the `GPLv3 Compliance` section
+
+In that section, the tablet should show the SSH username and password.
+For this tool, the username is normally `root`.
+
+Important:
+- the tool uses the reMarkable SSH password shown on the tablet
+- it does not use your reMarkable account password
+
+Then connect the reMarkable to your Mac with a USB cable.
+
+Step 8. Run the sync
+
+While you are inside the `zotero_sync` folder in Terminal, run:
+
+`python3 main.py`
+
+What happens the first time:
+
+- the tool creates `config.toml` automatically if it does not exist yet
+- it asks once for your reMarkable SSH password
+- it saves that password locally in `user_data/secrets.json`
+- later runs reuse the saved password, so you should not need to type it again
+
+What the tool will do:
+
+- send PDFs from Zotero to the reMarkable
+- create the `/Zotero` folder on the reMarkable if needed
+- create matching subfolders for Zotero subcollections
+- pull highlighted or annotated PDFs back from the reMarkable
+- repair reMarkable highlight exports so Zotero can read them properly
+- replace the Zotero PDF with the latest repaired annotated version
+
+Step 9. If you want to start over
+
+Run:
+
+`python3 main.py --reset`
+
+The tool will ask you to type `yes`.
+If you confirm, it resets the local config, saved SSH password, cache, and
+local sync state inside this `zotero_sync` folder.
+
+If you want to switch between collection mode and whole-library mode later,
+run:
+
+`python3 main.py --choose-library-scope`
+
+Common problems
+
+If the tool says the reMarkable timed out:
+
+- unplug the USB cable
+- plug it back in again
+- run the tool again
+
+If the tool cannot find your Zotero database:
+
+- open `config.toml`
+- set `db_path` to the location of your `zotero.sqlite` file
+- set `storage_dir` to the location of your Zotero `storage` folder
+
+If a PDF in Zotero still looks old after a sync:
+
+- close the PDF tab in Zotero
+- reopen it
+- if needed, restart Zotero
+
+If `brew` does not work after installation:
+
+- read the final messages printed by the Homebrew installer
+- follow the extra shell setup command it tells you to run
+- then close Terminal, open it again, and try `brew --version`
+
+If you want a simpler overview of what the tool can do, read
+`features and functions.txt` in this same folder.

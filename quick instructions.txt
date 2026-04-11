@@ -1,0 +1,114 @@
+zotero_sync quick instructions
+
+Important notes before you begin
+
+- Designed for and tested with Mac
+- Tested with the reMarkable Paper Pro
+- Tested and working with reMarkable Paper Pro software version 3.26.0.68
+- Not yet confirmed to work with other reMarkable tablet models
+- Likely will not work as-is on Windows
+- May work on Linux, but Linux has not been tested
+- Close Zotero before running the tool
+- Future reMarkable software updates may break part or all of the sync
+
+What you need
+
+- Python 3.11 or newer
+- Homebrew
+- `rsync` and `sshpass`
+- `pymupdf`
+- a Zotero collection named `reMarkable Sync`
+- a reMarkable in Developer mode
+- the reMarkable SSH password
+
+Install steps
+
+1. Install Python if needed:
+
+`python3 --version`
+
+2. Install Homebrew if needed:
+
+`brew --version`
+
+If `brew` is missing, install it with:
+
+`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+
+3. Install required command-line tools:
+
+`brew install rsync sshpass`
+
+4. Install the Python dependency:
+
+`python3 -m pip install pymupdf`
+
+5. In Zotero, create a collection named exactly `reMarkable Sync`
+
+Choose which part of Zotero gets synced:
+
+- the tool syncs only `reMarkable Sync` and its subcollections
+- in that mode, `reMarkable Sync` becomes `/Zotero` on the reMarkable
+- subcollections become subfolders inside `/Zotero`
+
+If you want the tool to use your whole Zotero library instead, run:
+
+`python3 main.py --choose-library-scope`
+
+Choose from the list and type `yes` to save the change.
+
+In whole-library mode:
+- the tool uses your full Zotero library, not just `reMarkable Sync`
+- everything still goes inside `/Zotero`
+- top-level collections become folders inside `/Zotero`
+- subcollections become subfolders inside those folders
+- items outside collections go into `/Zotero`
+
+You can change which part of Zotero gets synced later by running the same
+command again.
+
+This is possible if you need it, but once you pick the mode you want, it is
+usually better to keep using that same mode. Switching back and forth later can
+lead to messy sync results.
+
+6. On the reMarkable, turn on Developer mode and find the SSH password here:
+
+`Settings` → `General` → `Help` → `About` → `Copyrights and licenses` → `GPLv3 Compliance`
+
+The username is usually `root`.
+
+7. Connect the reMarkable by USB
+
+8. In Terminal, change into this `zotero_sync` folder and run:
+
+`python3 main.py`
+
+First run
+
+- creates `config.toml` automatically if needed
+- asks for the SSH password once
+- saves the password locally in `user_data/secrets.json`
+
+If Zotero is stored somewhere unusual
+
+Edit `config.toml` and set:
+- `db_path`
+- `storage_dir`
+
+Reset everything
+
+`python3 main.py --reset`
+
+You must type `yes` to confirm.
+
+Change sync scope later
+
+`python3 main.py --choose-library-scope`
+
+Possible if needed, but not recommended as a frequent change.
+
+If the reMarkable times out
+
+- unplug the USB cable
+- plug it back in again
+- run the tool again

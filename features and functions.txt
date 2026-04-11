@@ -1,0 +1,112 @@
+zotero_sync features and functions
+
+Important notes
+
+- This tool is designed for and tested with Mac
+- It has been tested with the reMarkable Paper Pro
+- It has been tested and is working with reMarkable Paper Pro software version
+  3.26.0.68
+- It is not yet confirmed to work with other reMarkable tablet models
+- It will likely not work as-is on Windows
+- It may also work on Linux if the needed command-line tools are available, but
+  Linux use has not been tested
+- Zotero should be closed while the tool is importing updated PDFs back into
+  the Zotero library
+- This tool depends on reMarkable's current internal storage behavior rather
+  than an official public sync API
+- Future reMarkable software updates may change internal behavior and break
+  some features
+
+What this tool is for
+
+This tool helps you keep a selected part of your Zotero library in sync with a
+reMarkable tablet.
+
+It is built for a simple workflow:
+- Zotero is where you organize and keep your papers
+- reMarkable is where you read and annotate them
+- After syncing, the latest version of a paper should be easy to find in Zotero
+
+Main features
+
+Syncs only the papers you choose
+
+- The tool lets you decide which part of your Zotero library it should use
+- By default, the tool looks only at the Zotero collection named
+  'reMarkable Sync' and its subcollections
+- In this mode, `reMarkable Sync` becomes the main `/Zotero` folder on the
+  reMarkable
+- Papers outside that collection are ignored unless you switch the tool to
+  whole-library mode
+
+Can also sync your whole Zotero library
+
+- You can switch the tool from collection mode to whole-library mode
+- The tool shows a small list of choices and asks you to confirm with `yes`
+  before saving the change
+- In whole-library mode, everything still goes inside the main `/Zotero`
+  folder on the reMarkable
+- Top-level Zotero collections become folders inside `/Zotero`
+- Subcollections become subfolders inside those folders
+- Items that are not in any collection go into `/Zotero`
+- You can switch back later if you decide you only want the
+  `reMarkable Sync` collection again
+- Changing this setting later is possible, but it is usually better to choose
+  one mode and keep using it
+
+Turns Zotero subcollections into reMarkable folders
+
+- The main destination folder on the reMarkable is `/Zotero`
+- If that folder does not exist yet, the tool creates it
+- Subcollections inside `reMarkable Sync` become matching folders on the
+  reMarkable automatically
+
+Keeps paper titles readable on the reMarkable
+
+- Papers are uploaded using the Zotero paper title, so the names on the
+  reMarkable are easier to recognize than raw file names
+
+Brings tags over from Zotero
+
+- Zotero item tags are copied to the reMarkable
+- The tool also adds useful tags based on:
+  the first author's surname
+  the last author's surname
+  the publication year
+
+Brings annotations back from the reMarkable
+
+- If you highlight or annotate a paper on the reMarkable, the tool brings that
+  updated PDF back into Zotero
+
+Fixes reMarkable highlight exports
+
+- reMarkable often exports highlights as simple colored overlays rather than
+  true PDF highlight annotations
+- This tool converts those overlays into real highlights that Zotero and other
+  PDF readers can recognize properly
+
+Keeps Zotero up to date with the latest annotated version
+
+- When an annotated PDF comes back from the reMarkable, the tool replaces the
+  Zotero PDF with the repaired, updated version
+- That helps keep one current working copy instead of a growing stack of extra
+  versions
+
+Creates reMarkable folders automatically
+
+- If the needed folder structure does not already exist on the reMarkable, the
+  tool creates it during sync
+
+Avoids clutter from duplicate copies
+
+- If the same paper appears more than once in the synced Zotero set, the tool
+  chooses one main copy for the reMarkable instead of leaving multiple separate
+  versions on the device
+
+Designed for repeated everyday use
+
+- After the first setup, the tool can be run again whenever you want to sync
+  your reading and annotation work
+- It keeps track of what has already been synced so it can focus on papers that
+  actually changed
