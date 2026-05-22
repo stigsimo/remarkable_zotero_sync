@@ -235,7 +235,17 @@ Important:
 
 Then connect the reMarkable to your Mac with a USB cable.
 
-Step 8. Run the sync
+Step 8. Enable usb web interface for syncing the files from the remarkable to zotero
+
+Open the Menu from the main page.
+
+Select “Settings”.
+
+Select “Storage”.
+
+Toggle “USB web interface” on.
+
+Step 9. Run the sync
 
 While you are inside the `zotero_sync` folder in Terminal, run:
 
@@ -257,7 +267,7 @@ What the tool will do:
 - repair reMarkable highlight exports so Zotero can read them properly
 - replace the Zotero PDF with the latest repaired annotated version
 
-Step 9. If you want to start over
+Step 10. If you want to start over
 
 Run:
 
